@@ -1,0 +1,11 @@
+apiVersion: v1
+kind: ResourceQuota
+metadata:
+  name: bonita-resource-quota
+  namespace: bonita
+spec:
+  hard:
+    requests.cpu: "2"   # Sum of CPU requests: Bonita (1) + PostgreSQL (1)
+    requests.memory: 3Gi   # Sum of memory requests: Bonita (2Gi) + PostgreSQL (1Gi)
+    limits.cpu: "3"   # Sum of CPU limits: Bonita (2) + PostgreSQL (1)
+    limits.memory: 5Gi   # Sum of memory limits: Bonita (4Gi) + PostgreSQL (1Gi)
