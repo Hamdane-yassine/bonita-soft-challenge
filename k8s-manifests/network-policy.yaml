@@ -1,0 +1,19 @@
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: bonita-db-access
+  namespace: bonita
+spec:
+  podSelector:
+    matchLabels:
+      app: bonita-db
+  policyTypes:
+    - Ingress
+  ingress:
+    - from:
+        - podSelector:
+            matchLabels:
+              app: bonita
+      ports:
+        - protocol: TCP
+          port: 5432

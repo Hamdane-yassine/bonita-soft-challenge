@@ -1,0 +1,9 @@
+DB_VENDOR=postgres
+DB_HOST=bonita-db
+DB_PORT=5432
+DB_NAME=bonita
+DB_USER=bonita
+DB_PASS=bpm
+BIZ_DB_NAME=business_data
+BIZ_DB_USER=business_data
+BIZ_DB_PASS=bpm
