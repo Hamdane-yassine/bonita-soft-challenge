@@ -64,16 +64,16 @@ spec:
                 name: db-connect-config
             - secretRef:
                 name: bonita-credentials
+          resources:
+            requests:
+              memory: "2Gi"
+              cpu: "1000m"
+            limits:
+              memory: "4Gi"
+              cpu: "2000m"
           volumeMounts:
             - name: custom-init-scripts
               mountPath: /opt/custom-init.d
-              resources:
-                requests:
-                  memory: "2Gi"
-                  cpu: "1000m"
-                limits:
-                  memory: "4Gi"
-                  cpu: "2000m"    
           livenessProbe:
             httpGet:
               path: / #in subscription edition we should use the /bonita/healthz
