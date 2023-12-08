@@ -7,10 +7,23 @@ metadata:
   namespace: bonita
 spec:
   ports:
-  - port: 5432
-    targetPort: 5432
+    - port: 5432
+      targetPort: 5432
   selector:
     app: bonita-db
+---
+kind: PersistentVolume
+apiVersion: v1
+metadata:
+  name: db-data-pv
+spec:
+  capacity:
+    storage: 2Gi
+  accessModes:
+    - ReadWriteOnce
+  hostPath:
+    path: /var/db-data
+
 ---
 apiVersion: apps/v1
 kind: StatefulSet
@@ -29,34 +42,34 @@ spec:
         app: bonita-db
     spec:
       containers:
-      - name: bonita-postgres
-        image: bonitasoft/bonita-postgres:15.4
-        ports:
-        - containerPort: 5432
-        envFrom: 
-        - secretRef:
-            name: db-pwd
-        volumeMounts:
-        - name: db-data
-          mountPath: /var/lib/postgresql/data
-        livenessProbe:
-          exec:
-            command:
-            - /usr/local/bin/healthcheck.sh
-          initialDelaySeconds: 30
-          periodSeconds: 10
-        readinessProbe:
-          exec:
-            command:
-            - /usr/local/bin/healthcheck.sh
-          initialDelaySeconds: 5
-          periodSeconds: 10        
+        - name: bonita-postgres
+          image: bonitasoft/bonita-postgres:15.4
+          ports:
+            - containerPort: 5432
+          envFrom:
+            - secretRef:
+                name: db-pwd
+          volumeMounts:
+            - name: db-data
+              mountPath: /var/lib/postgresql/data
+          livenessProbe:
+            exec:
+              command:
+                - /usr/local/bin/healthcheck.sh
+            initialDelaySeconds: 30
+            periodSeconds: 10
+          readinessProbe:
+            exec:
+              command:
+                - /usr/local/bin/healthcheck.sh
+            initialDelaySeconds: 5
+            periodSeconds: 10
   volumeClaimTemplates:
-  - metadata:
-      name: db-data
-    spec:
-      storageClassName: "standard"
-      accessModes: [ "ReadWriteOnce" ]
-      resources:
-        requests:
-          storage: 1Gi
+    - metadata:
+        name: db-data
+      spec:
+        storageClassName: "standard"
+        accessModes: ["ReadWriteOnce"]
+        resources:
+          requests:
+            storage: 1Gi
