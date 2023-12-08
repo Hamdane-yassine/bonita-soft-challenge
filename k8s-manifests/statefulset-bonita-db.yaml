@@ -68,7 +68,6 @@ spec:
     - metadata:
         name: db-data
       spec:
-        storageClassName: "standard"
         accessModes: ["ReadWriteOnce"]
         resources:
           requests:
