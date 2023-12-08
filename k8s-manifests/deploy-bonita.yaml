@@ -48,6 +48,13 @@ spec:
               "-c",
               "cp /scripts/* /custom-init/ && chmod +x /custom-init/*",
             ]
+          resources:
+            requests:
+              memory: "64Mi"
+              cpu: "50m"    
+            limits:
+              memory: "128Mi"
+              cpu: "100m"  
           volumeMounts:
             - name: custom-init-scripts
               mountPath: /custom-init
