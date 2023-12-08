@@ -38,6 +38,7 @@ spec:
       labels:
         app: bonita
     spec:
+      serviceAccountName: bonita-service-account
       initContainers:
         - name: init-scripts
           image: alpine

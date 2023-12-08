@@ -41,6 +41,7 @@ spec:
       labels:
         app: bonita-db
     spec:
+      serviceAccountName: bonita-service-account
       containers:
         - name: bonita-postgres
           image: bonitasoft/bonita-postgres:15.4
