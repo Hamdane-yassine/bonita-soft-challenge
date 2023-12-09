@@ -28,7 +28,7 @@ Argo CD is set to fetch updates from the [`k8s-manifests`](https://gitlab.com/Ha
   - *Purpose*: Provides environment variables for the Bonita application's database connection.
   - *Role*: Used to create the 'db-connect-config' ConfigMap, detailing database connection specifics.
 
-### [`k8s-manifests`](https://gitlab.com/Hamdane10/bonita-soft-challenge/-/tree/main/k8s-manifests?ref_type=heads) Directory
+### `k8s-manifests` Directory
 
 - **[`bonita-hpa.yaml`](https://gitlab.com/Hamdane10/bonita-soft-challenge/-/blob/cc90d56e2286657c2b4323afd30634a89c07479f/k8s-manifests/bonita-hpa.yaml)**:
   - *Purpose*: Defines the Horizontal Pod Autoscaler for Bonita.
