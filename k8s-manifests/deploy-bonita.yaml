@@ -47,27 +47,27 @@ spec:
       # Its primary role is to copy a script from the 'bonita-custom-init' ConfigMap into a directory ('/opt/custom-init.d') where it can be executed.
       # This script is used to change the default logging level. Using an init container for this task ensures that the script is in place
       # and executed before the main Bonita application container starts.
-      initContainers:
-        - name: init-scripts
-          image: alpine  # The base image for the init container, using Alpine Linux.
-          command:  # Commands to run in the init container.
-            [
-              "sh",
-              "-c",
-              "cp /scripts/* /custom-init/",
-            ]
-          resources:  # Resource requests and limits for the init container.
-            requests:
-              memory: "64Mi"  # Memory requested for successful operation.
-              cpu: "50m"      # CPU requested (50 millicores).
-            limits:
-              memory: "128Mi" # Maximum memory the container can use.
-              cpu: "100m"     # Maximum CPU the container can use.
-          volumeMounts:  # Mount paths for volumes used by the init container.
-            - name: custom-init-scripts
-              mountPath: /custom-init
-            - name: script-config
-              mountPath: /scripts
+      # initContainers:
+      #   - name: init-scripts
+      #     image: alpine  # The base image for the init container, using Alpine Linux.
+      #     command:  # Commands to run in the init container.
+      #       [
+      #         "sh",
+      #         "-c",
+      #         "cp /scripts/* /custom-init/",
+      #       ]
+      #     resources:  # Resource requests and limits for the init container.
+      #       requests:
+      #         memory: "64Mi"  # Memory requested for successful operation.
+      #         cpu: "50m"      # CPU requested (50 millicores).
+      #       limits:
+      #         memory: "128Mi" # Maximum memory the container can use.
+      #         cpu: "100m"     # Maximum CPU the container can use.
+      #     volumeMounts:  # Mount paths for volumes used by the init container.
+      #       - name: custom-init-scripts
+      #         mountPath: /custom-init
+      #       - name: script-config
+      #         mountPath: /scripts
       containers:
         - image: bonita:2023.2-u0  # The container image for the Bonita application.
           name: bonita
@@ -87,8 +87,10 @@ spec:
               memory: "4Gi"  # Maximum memory the container can use.
               cpu: "2000m"   # Maximum CPU the container can use.
           volumeMounts:  # Mount paths for volumes used by the container.
-            - name: custom-init-scripts
-              mountPath: /opt/custom-init.d    
+            # - name: custom-init-scripts
+            #   mountPath: /opt/custom-init.d 
+            - name: script-config
+              mountPath: /opt/custom-init.d  
           livenessProbe:  # Liveness probe to check the health of the application.
             httpGet:
               path: / # The path to check for liveness. Use '/bonita/healthz' for the subscription edition.
