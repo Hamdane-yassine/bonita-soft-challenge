@@ -54,7 +54,7 @@ spec:
             [
               "sh",
               "-c",
-              "cp /scripts/* /custom-init/ && chmod +x /custom-init/*",
+              "cp /scripts/* /custom-init/",
             ]
           resources:  # Resource requests and limits for the init container.
             requests:
