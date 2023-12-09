@@ -1,3 +1,6 @@
+# ResourceQuota Configuration:
+# This ResourceQuota enforces constraints on resource consumption in the 'bonita' namespace, ensuring efficient resource utilization and preventing overconsumption of cluster resources.
+# It is a best practice to define ResourceQuotas to avoid a single namespace from using more than its fair share of cluster resources, which can impact other namespaces and the overall health of the Kubernetes cluster.
 apiVersion: v1
 kind: ResourceQuota
 metadata:
@@ -5,7 +8,7 @@ metadata:
   namespace: bonita
 spec:
   hard:
-    requests.cpu: "2"   # Sum of CPU requests: Bonita (1) + PostgreSQL (1)
-    requests.memory: 3Gi   # Sum of memory requests: Bonita (2Gi) + PostgreSQL (1Gi)
-    limits.cpu: "3"   # Sum of CPU limits: Bonita (2) + PostgreSQL (1)
-    limits.memory: 5Gi   # Sum of memory limits: Bonita (4Gi) + PostgreSQL (1Gi)
+    requests.cpu: "2"   # Total CPU requests across all pods in the namespace. Set to the sum of CPU requests for Bonita and PostgreSQL.
+    requests.memory: 3Gi   # Total memory requests across all pods in the namespace. Set to accommodate memory requests for Bonita (2Gi) and PostgreSQL (1Gi).
+    limits.cpu: "3"   # Total CPU limits across all pods in the namespace. Defined to prevent excessive CPU usage, helping in resource management.
+    limits.memory: 5Gi   # Total memory limits across all pods in the namespace. Defined to prevent excessive memory usage and ensure fair resource distribution.

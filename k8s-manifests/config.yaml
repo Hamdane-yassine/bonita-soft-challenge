@@ -1,3 +1,5 @@
+# ConfigMap: db-connect-config
+# This ConfigMap stores configuration data for the Bonita application, such as database connection information.
 apiVersion: v1
 data:
   BIZ_DB_NAME: business_data
@@ -15,6 +17,9 @@ metadata:
   name: db-connect-config
   namespace: bonita
 ---
+
+# ConfigMap: bonita-custom-init
+# This ConfigMap stores a script to set the default logging level to INFO for the Bonita application.
 apiVersion: v1
 data:
   set_logging_level_to_info.sh: |-
@@ -43,6 +48,9 @@ metadata:
   name: bonita-custom-init
   namespace: bonita
 ---
+
+# Secret: db-pwd
+# This Secret stores the encoded password for the PostgreSQL database used by Bonita.
 apiVersion: v1
 data:
   POSTGRES_PASSWORD: bXlwYXNzd29yZA==
@@ -52,6 +60,12 @@ metadata:
   name: db-pwd
   namespace: bonita
 ---
+
+# Secret: bonita-credentials
+# This Secret stores encoded credentials for the Bonita Runtime Admin and Platform login.
+# Initially, this Secret used TENANT_LOGIN/TENANT_PASSWORD, but a warning in the application log indicated
+# these were deprecated. It was updated to use BONITA_RUNTIME_ADMIN_USERNAME/BONITA_RUNTIME_ADMIN_PASSWORD
+# as recommended by the application.
 apiVersion: v1
 data:
   BONITA_RUNTIME_ADMIN_USERNAME: Ym9uaXRhLWxvZ2lu
@@ -63,4 +77,3 @@ metadata:
   creationTimestamp: null
   name: bonita-credentials
   namespace: bonita
----

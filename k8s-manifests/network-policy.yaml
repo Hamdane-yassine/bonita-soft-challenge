@@ -1,3 +1,7 @@
+# NetworkPolicy Configuration: 
+# This NetworkPolicy is defined to enhance the security of the Bonita application by controlling network access to the PostgreSQL database (bonita-db).
+# It specifies that only pods with the label 'app: bonita' (i.e., the Bonita application pods) are allowed to communicate with the PostgreSQL database pods, which are labeled 'app: bonita-db'.
+# The access is restricted to TCP port 5432, which is the standard port for PostgreSQL database connections.
 apiVersion: networking.k8s.io/v1
 kind: NetworkPolicy
 metadata:
@@ -6,14 +10,14 @@ metadata:
 spec:
   podSelector:
     matchLabels:
-      app: bonita-db
+      app: bonita-db  # Selects pods with the label 'app: bonita-db' (PostgreSQL database pods).
   policyTypes:
-    - Ingress
+    - Ingress  # Specifies the policy type as Ingress (incoming traffic).
   ingress:
     - from:
         - podSelector:
             matchLabels:
-              app: bonita
+              app: bonita  # Only allows traffic from pods with the label 'app: bonita' (Bonita application pods).
       ports:
         - protocol: TCP
-          port: 5432
+          port: 5432  # Specifies the port number (5432) for PostgreSQL.

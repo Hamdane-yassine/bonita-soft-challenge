@@ -1,3 +1,6 @@
+# Service Definition for Bonita Database
+# Exposes the PostgreSQL database on port 5432 within the Kubernetes cluster.
+# This service allows other components within the cluster to communicate with the database.
 apiVersion: v1
 kind: Service
 metadata:
@@ -7,11 +10,14 @@ metadata:
   namespace: bonita
 spec:
   ports:
-    - port: 5432
-      targetPort: 5432
+    - port: 5432 # The port on which the service is exposed.
+      targetPort: 5432 # The port on the container that the service routes to.
   selector:
-    app: bonita-db
+    app: bonita-db # Selector labels used to identify the database pods that the service routes to.
 ---
+# PersistentVolume Definition for Database Storage
+# Provides storage for the database. It is a volume that can persist data beyond the lifecycle of individual pods.
+# The capacity is set to 2Gi, and the storage is accessible in ReadWriteOnce mode, meaning it can be mounted as read-write by a single node.
 kind: PersistentVolume
 apiVersion: v1
 metadata:
@@ -25,6 +31,9 @@ spec:
     path: /var/db-data
 
 ---
+# StatefulSet Definition for Bonita Database
+# StatefulSets are ideal for stateful applications like databases that require persistent storage and a stable network identifier.
+# Unlike Deployments, StatefulSets ensure that the identity (like network name) and storage of each pod is maintained across restarts and rescheduling.
 apiVersion: apps/v1
 kind: StatefulSet
 metadata:
@@ -33,24 +42,24 @@ metadata:
 spec:
   selector:
     matchLabels:
-      app: bonita-db
-  serviceName: bonita-db
-  replicas: 1
+      app: bonita-db # Labels to identify the database pods.
+  serviceName: bonita-db # The name of the service that provides network identity to the pods.
+  replicas: 1 # Number of pod replicas; typically one for databases to ensure data consistency.
   template:
     metadata:
       labels:
         app: bonita-db
     spec:
-      serviceAccountName: bonita-service-account
+      serviceAccountName: bonita-service-account # Service account for pod permissions.
       containers:
         - name: bonita-postgres
-          image: bonitasoft/bonita-postgres:15.4
+          image: bonitasoft/bonita-postgres:15.4 # The container image for PostgreSQL.
           ports:
-            - containerPort: 5432
+            - containerPort: 5432 # The port that the container listens on.
           envFrom:
             - secretRef:
-                name: db-pwd
-          resources:
+                name: db-pwd # Secret for database credentials.
+          resources: # Resource requests and limits for the container.
             requests:
               memory: "1024Mi"
               cpu: "1000m"
@@ -59,14 +68,14 @@ spec:
               cpu: "1000m"
           volumeMounts:
             - name: db-data
-              mountPath: /var/lib/postgresql/data
-          livenessProbe:
+              mountPath: /var/lib/postgresql/data # Mount path for database storage.
+          livenessProbe: # Checks if the database is running.
             exec:
               command:
                 - /usr/local/bin/healthcheck.sh
             initialDelaySeconds: 30
             periodSeconds: 10
-          readinessProbe:
+          readinessProbe: # Checks if the database is ready to accept connections.
             exec:
               command:
                 - /usr/local/bin/healthcheck.sh
@@ -79,4 +88,4 @@ spec:
         accessModes: ["ReadWriteOnce"]
         resources:
           requests:
-            storage: 1Gi
+            storage: 1Gi # Storage request for each database pod.

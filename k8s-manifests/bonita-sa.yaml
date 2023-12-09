@@ -1,3 +1,4 @@
+# This ServiceAccount is used to provide identity for the Bonita application processes running in the namespace 'bonita'.
 apiVersion: v1
 kind: ServiceAccount
 metadata:

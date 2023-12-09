@@ -1,9 +1,29 @@
+# Environment Configuration for Bonita Application's Database Connection
+# This file contains environment variables used to create the 'db-connect-config' ConfigMap for the Bonita application.
+
+# DB_VENDOR specifies the type of database being used, in this case, PostgreSQL.
 DB_VENDOR=postgres
+
+# DB_HOST defines the hostname or address of the database server.
 DB_HOST=bonita-db
+
+# DB_PORT indicates the port on which the database server is listening.
 DB_PORT=5432
+
+# DB_NAME is the name of the database to connect to.
 DB_NAME=bonita
+
+# DB_USER is the username for database authentication.
 DB_USER=bonita
+
+# DB_PASS is the password for database authentication.
 DB_PASS=bpm
+
+# BIZ_DB_NAME specifies the name of the business data database.
 BIZ_DB_NAME=business_data
+
+# BIZ_DB_USER is the username for the business data database.
 BIZ_DB_USER=business_data
+
+# BIZ_DB_PASS is the password for the business data database.
 BIZ_DB_PASS=bpm

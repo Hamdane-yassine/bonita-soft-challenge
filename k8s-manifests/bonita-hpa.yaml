@@ -1,26 +1,36 @@
-apiVersion: autoscaling/v2
-kind: HorizontalPodAutoscaler
+# HPA Configuration for Bonita Deployment
+apiVersion: autoscaling/v2  # HPA API version
+kind: HorizontalPodAutoscaler  # Defines this as an HPA resource
 metadata:
-  name: bonita-hpa
-  namespace: bonita
+  name: bonita-hpa  # Name of the HPA
+  namespace: bonita  # Namespace where the HPA is deployed
+
+# Specification of the HPA
 spec:
+  # Reference to the Deployment that this HPA will scale
   scaleTargetRef:
-    apiVersion: apps/v1
-    kind: Deployment
-    name: bonita
+    apiVersion: apps/v1  # API version of the target resource
+    kind: Deployment  # Type of the target resource
+    name: bonita  # Name of the Deployment that the HPA will scale
+
+  # Minimum and maximum number of pod replicas
   minReplicas: 1  # Minimum number of replicas
   maxReplicas: 5  # Maximum number of replicas
+
+  # Behavior of scaling down
   behavior:
     scaleDown:
-      stabilizationWindowSeconds: 300
+      stabilizationWindowSeconds: 300  # How long to wait before another scale down operation can be performed after the current one
       policies:
-      - type: Pods
-        value: 1
-        periodSeconds: 60
+        - type: Pods  # Scale down based on the number of Pods
+          value: 1  # Number of Pods to scale down at a time
+          periodSeconds: 60  # Interval between successive scale down operations
+
+  # Metrics for scaling
   metrics:
-    - type: Resource
+    - type: Resource  # Type of the metric to be used for scaling
       resource:
-        name: cpu
+        name: cpu  # The resource to be monitored
         target:
-          type: Utilization
-          averageUtilization: 80  # Target CPU utilization percentage
+          type: Utilization  # Utilization target type
+          averageUtilization: 80  # Target CPU utilization percentage for scaling

@@ -1,102 +1,110 @@
+# Service Definition for Bonita
+# Exposes the Bonita application on a specific port within the Kubernetes cluster. 
+# This allows for network access to the Bonita application from outside the cluster.
+# NodePort services are generally used in test environments. For production, it's recommended to use a LoadBalancer service or an Ingress to expose applications, as they offer more flexibility and better integration with cloud provider networking.
 apiVersion: v1
 kind: Service
 metadata:
-  creationTimestamp: null
   labels:
     app: bonita
   name: bonita
   namespace: bonita
 spec:
   ports:
-    - port: 8080
-      protocol: TCP
-      targetPort: 8080
-      nodePort: 30000
+    - port: 8080  # The port on which the service is exposed.
+      protocol: TCP  # The protocol used by the service (TCP).
+      targetPort: 8080  # The port on the container that the service routes to.
+      nodePort: 30000  # The external port on which the service is exposed on each node.
   selector:
-    app: bonita
-  type: NodePort
+    app: bonita  # Selector labels used to identify the pods that the service routes to.
+  type: NodePort  # Type of service, which exposes the service on each Node’s IP at a static port.
 status:
   loadBalancer: {}
 ---
+
+
+# Deployment Definition for Bonita
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  creationTimestamp: null
   labels:
     app: bonita
   name: bonita
   namespace: bonita
+# Defines the desired state for deploying the Bonita application including replicas, labels, and template.
 spec:
-  replicas: 1
+  replicas: 1  # Number of desired pod replicas.
   selector:
     matchLabels:
-      app: bonita
-  strategy: {}
+      app: bonita  # Selector labels to identify the pods that belong to this deployment.
   template:
     metadata:
-      creationTimestamp: null
       labels:
-        app: bonita
+        app: bonita  # Labels applied to all pods in the deployment.
     spec:
-      serviceAccountName: bonita-service-account
+      serviceAccountName: bonita-service-account  # The service account under which the pods will run.
+      # The init container is used here to prepare the environment before the main container starts.
+      # Its primary role is to copy a script from the 'bonita-custom-init' ConfigMap into a directory ('/opt/custom-init.d') where it can be executed.
+      # This script is used to change the default logging level. Using an init container for this task ensures that the script is in place
+      # and executed before the main Bonita application container starts.
       initContainers:
         - name: init-scripts
-          image: alpine
-          command:
+          image: alpine  # The base image for the init container, using Alpine Linux.
+          command:  # Commands to run in the init container.
             [
               "sh",
               "-c",
               "cp /scripts/* /custom-init/ && chmod +x /custom-init/*",
             ]
-          resources:
+          resources:  # Resource requests and limits for the init container.
             requests:
-              memory: "64Mi"
-              cpu: "50m"    
+              memory: "64Mi"  # Memory requested for successful operation.
+              cpu: "50m"      # CPU requested (50 millicores).
             limits:
-              memory: "128Mi"
-              cpu: "100m"  
-          volumeMounts:
+              memory: "128Mi" # Maximum memory the container can use.
+              cpu: "100m"     # Maximum CPU the container can use.
+          volumeMounts:  # Mount paths for volumes used by the init container.
             - name: custom-init-scripts
               mountPath: /custom-init
             - name: script-config
               mountPath: /scripts
       containers:
-        - image: bonita:2023.2-u0
+        - image: bonita:2023.2-u0  # The container image for the Bonita application.
           name: bonita
           ports:
-            - containerPort: 8080
+            - containerPort: 8080  # The port that the container listens on.
               name: bonita-port
-          envFrom:
+          envFrom:  # Environment variables sourced from ConfigMap and Secret.
             - configMapRef:
-                name: db-connect-config
+                name: db-connect-config  # Configuration values for the Bonita application.
             - secretRef:
-                name: bonita-credentials
-          resources:
+                name: bonita-credentials  # Secret values like credentials.
+          resources:  # Resource requests and limits for the container.
             requests:
-              memory: "2Gi"
-              cpu: "1000m"
+              memory: "2Gi"  # Memory requested for successful operation.
+              cpu: "1000m"   # CPU requested (1000 millicores).
             limits:
-              memory: "4Gi"
-              cpu: "2000m"
-          volumeMounts:
+              memory: "4Gi"  # Maximum memory the container can use.
+              cpu: "2000m"   # Maximum CPU the container can use.
+          volumeMounts:  # Mount paths for volumes used by the container.
             - name: custom-init-scripts
-              mountPath: /opt/custom-init.d
-          livenessProbe:
+              mountPath: /opt/custom-init.d    
+          livenessProbe:  # Liveness probe to check the health of the application.
             httpGet:
-              path: / #in subscription edition we should use the /bonita/healthz
+              path: / # The path to check for liveness. Use '/bonita/healthz' for the subscription edition.
               port: 8080
-            initialDelaySeconds: 30
-            periodSeconds: 20
-          readinessProbe:
+            initialDelaySeconds: 30  # Delay before the liveness probe is initiated.
+            periodSeconds: 20  # Time between each probe execution.
+          readinessProbe:  # Readiness probe to check if the application is ready to serve traffic.
             httpGet:
-              path: /
+              path: /  # The path to check for liveness. Use '/bonita/healthz' for the subscription edition.
               port: 8080
-            initialDelaySeconds: 30
-            periodSeconds: 20
-      volumes:
+            initialDelaySeconds: 5  # Delay before the readiness probe is initiated.
+            periodSeconds: 20  # Time between each probe execution.
+      volumes:  # Volume definitions for the deployment.
         - name: custom-init-scripts
-          emptyDir: {}
+          emptyDir: {}  # An empty directory that is created on the fly.
         - name: script-config
           configMap:
-            name: bonita-custom-init
+            name: bonita-custom-init  # ConfigMap used in the init container .
 status: {}
