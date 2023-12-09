@@ -14,6 +14,6 @@ echo "Ensuring root logger level is set to INFO in $CONFIG_FILE..."
 
 # The script uses sed to process the XML file
 # It targets the Root logger element and changes its level to INFO
-sed -i 's/<Root level="[^"]*"/<Root level="INFO"/' $CONFIG_FILE
+sed -i 's/<Root level="[^"]*"/<Root level="ERROR"/' $CONFIG_FILE
 
 echo "Log level update completed."
