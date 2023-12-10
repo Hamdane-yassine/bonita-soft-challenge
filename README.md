@@ -2,7 +2,7 @@
 
 This repository contains the solutions and documentation for the DevOps Cloud technical challenge. The challenge involves deploying Bonita Community using its official Docker image in a Kubernetes cluster, with variations in configuration and database setup.
 
- The solution for this challenge is deployed on a kubernetes cluster and can be accessed at [http://34.163.46.195/bonita/](http://34.163.46.195/bonita/).
+The solution for this challenge is deployed on a Kubernetes cluster and can be accessed at [http://34.163.136.211/bonita/](http://34.163.136.211/bonita/), but it is only accessible on Monday, 11/12/2023, from 8 AM to 5 PM by the time of UTC+1
 
 ## Work Environment
 
